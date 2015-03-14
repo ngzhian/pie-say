@@ -188,6 +188,15 @@ body {
 	content: "\e005";
 }
 
+/* Entry Box */
+.btn-1 {
+	background: #91ead4;
+	color: #990066;
+	box-shadow: 0 6px #74e19f;
+	-webkit-transition: none;
+	-moz-transition: none;
+	transition: none;
+}
 
 /* Button 2 */
 .btn-2 {
