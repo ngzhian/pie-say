@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Pie Say</title>
+	<link href="./PScomponent.css" rel="stylesheet"></link>
+	<style>
+
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div id="pie">
+			<h2>You've got </h2>
+			<div id="myPieNumber">
+				<div id="pieNumberWrapper">
+					<span id="myPieNumer"></span>
+					<br/>
+					<span>-</span>
+					<br/>
+					<span id="myPieDenom"></span>
+				</div>
+			</div>
+			<h2>of a pie!</h2>
+		</div>
+
+		<form id="addPie">
+			<input id="otherPass" type="text" class="btn btn-2 btn-2g">
+			<br/>
+			<button id="hungry" class="btn btn-2 btn-2g" type="button">I'm hungry!</button>
+		</form>
+
+
+		<div class="pass">
+			Your slice:
+			<span id="myPassBox"></span>
+		</div>
+
+		<div>
+			<ul id="myPiesList"> 
+			</ul>
+		</div>
+	</div>
+</body>
+<script src="https://raw.githubusercontent.com/lodash/lodash/3.5.0/lodash.js"></script>
+<script src="./fraction.js"></script>
+<script>
+	;(function(window) {
+		var document = window.document;
+		var console = window.console;
+		var d = console.debug;
+
+		var myPassBox = document.getElementById('myPassBox');
+		var pie = document.getElementById('pie');
+		var myPiesList = document.getElementById('myPiesList');
+		var addPieForm = document.getElementById('addPie');
+		var otherPass = document.getElementById('otherPass');
+		var myPie = document.getElementById('myPie');
+		var myPieNumer = document.getElementById('myPieNumer');
+		var myPieDenom = document.getElementById('myPieDenom');
+		var hungry = document.getElementById('hungry');
+
+		var allPies = [];
+
+		// addPieForm.addEventListener('submit', addPie);
+		hungry.addEventListener('click', addPie);
+
+		function enterPass(event) {
+			if (otherPass.value.length === 5) {
+				d('6');
+			}
+		}
+
+		function addPie(event) {
+			event.preventDefault();
+			var other = otherPass.value;
+			if (!validatePass(other)) { return false;}
+			fraction = decode(other);
+			d(fraction);
+			f1 = new Fraction(fraction[0], fraction[1]);
+			f2 = new Fraction(myFraction[0], myFraction[1]);
+			newFrac = f1.add(f2);
+			var newFraction = [newFrac.numerator, newFrac.denominator];
+			// var newFraction = [fraction[0] + myFraction[0], fraction[1] + myFraction[1]];
+			myFraction = newFraction;
+			updateMyFraction(myFraction);
+			addPieToList(other);
+		}
+
+		function showUserPass(pass) {
+			userPassword.value = pass;
+		}
+
+
+		function generatePass(frac) {
+			return encode(frac);
+		}
+
+		function randomFraction() {
+		var denom = Math.round(Math.random()*10) + 2; // 1-12
+		return [1, denom];
+	}
+
+	// 151 134 -> 1/4
+	/*
+	CODE: 6 digits
+	digits 0 and 3 have no significance
+	1 and 2 make up the numerator
+	4 and 5 make up the denominator
+	user a cipher to make this up
+
+	decoding:
+	digit 1 mapping: 0-4 -> 1, 5-9 -> 0
+	digit 2 mapping: + 1
+
+	digit 4 mapping: 0-4 -> 0, 5-9 -> 1
+	digit 5 mapping: - 1
+
+	endcoding:
+	digit 1 mapping: 1 -> {0, 1, 2, 3, 4}, 0 -> {5, 6, 7, 8, 9}
+	digit 2 mapping: - 1
+
+	digit 4 mapping: 0 -> {0, 1, 2, 3, 4}, 1 -> {5, 6, 7, 8, 9}
+	digit 5 mapping: + 1
+	*/
+	function encode(fraction) {
+		var numer = fraction[0];
+		var denom = fraction[1];
+		digit0 = _.random(0, 9);
+		digit1 = numer > 10 ? _.random(0, 4) : _.random(5, 9);
+		digit2 = numer % 10;
+		digit3 = _.random(0, 9);
+		digit4 = numer < 10 ? _.random(0, 4) : _.random(5, 9);
+		digit5 = numer % 10;
+		return [digit0, digit1, digit2, digit3, digit4, digit5].join('')
+		// return numer + ',' + denom;
+	}
+
+	function validatePass(candidate) {
+		if (!candidate) { return false;}
+		d(allFractions);
+		if (_.includes(allFractions, candidate)) {
+			// check that the code has not been added before
+			return false;
+		}
+		return true;
+	}
+
+	// precondition: pass has gone through `validatePass`
+	function decode(pass) {
+		digit1 = pass[1];
+		digit2 = pass[2];
+		digit4 = pass[4];
+		digit5 = pass[5];
+
+		numer1 = digit1 <= 4 ? 1 : 0;
+		numer2 = digit2;
+
+		denom1 = digit4 <= 4 ? 0 : 1;
+		denom2 = digit5;
+
+		numer = parseInt([numer1, numer2].join(''))
+		denom = parseInt([denom1, denom2].join(''))
+		return [numer, denom]
+	}
+
+	function addPieToList(pie) {
+		var li = document.createElement('li');
+		li.textContent = pie;
+		myPiesList.appendChild(li)
+		allFractions.push(pie);
+	}
+
+	function updateMyFraction(fraction) {
+		myPieNumer.textContent = fraction[0];
+		myPieDenom.textContent = fraction[1];
+	}
+
+	var myFraction = randomFraction();
+	updateMyFraction(myFraction);
+	var myCode = encode(myFraction);
+	var allFractions = [];
+	allFractions.push(myCode);
+	myPassBox.textContent = myCode;
+
+})(window)
+// when the user opens this page, user gets a unique id (which we can get a fraction from)
+
+// decode :: str -> (int, int)
+// decode pass -> (numer, denom)
+
+// encode:: (int, int) -> str
+// encode (numer, denom) -> pass
+
+// randomly generate numer & denom
+// then encode that
+// and display that to the user as the code
+
+
+// events
+// when the user enter the pass,
+// we decode the pass
+// validate
+// and add the fraction to their current pie
+</script>
+
+</html>
