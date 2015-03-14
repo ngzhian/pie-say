@@ -41,61 +41,62 @@
 		</div>
 	</div>
 </body>
-<script src="https://raw.githubusercontent.com/lodash/lodash/3.5.0/lodash.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.5.0/lodash.js
+"></script>
 <script src="./fraction.js"></script>
 <script>
-	;(function(window) {
-		var document = window.document;
-		var console = window.console;
-		var d = console.debug;
+;(function(window) {
+	var document = window.document;
+	var console = window.console;
 
-		var myPassBox = document.getElementById('myPassBox');
-		var pie = document.getElementById('pie');
-		var myPiesList = document.getElementById('myPiesList');
-		var addPieForm = document.getElementById('addPie');
-		var otherPass = document.getElementById('otherPass');
-		var myPie = document.getElementById('myPie');
-		var myPieNumer = document.getElementById('myPieNumer');
-		var myPieDenom = document.getElementById('myPieDenom');
-		var hungry = document.getElementById('hungry');
+	var myPassBox = document.getElementById('myPassBox');
+	var pie = document.getElementById('pie');
+	var myPiesList = document.getElementById('myPiesList');
+	var addPieForm = document.getElementById('addPie');
+	var otherPass = document.getElementById('otherPass');
+	var myPie = document.getElementById('myPie');
+	var myPieNumer = document.getElementById('myPieNumer');
+	var myPieDenom = document.getElementById('myPieDenom');
+	var hungry = document.getElementById('hungry');
 
-		var allPies = [];
+	var allPies = [];
 
-		// addPieForm.addEventListener('submit', addPie);
-		hungry.addEventListener('click', addPie);
+	var myFraction = randomFraction();
+	updateMyFraction(myFraction);
+	var myCode = encode(myFraction);
+	var allFractions = [];
+	allFractions.push(myCode);
+	myPassBox.textContent = myCode;
 
-		function enterPass(event) {
-			if (otherPass.value.length === 5) {
-				d('6');
-			}
-		}
+	hungry.addEventListener('click', addPie);
 
-		function addPie(event) {
-			event.preventDefault();
-			var other = otherPass.value;
-			if (!validatePass(other)) { return false;}
-			fraction = decode(other);
-			d(fraction);
-			f1 = new Fraction(fraction[0], fraction[1]);
-			f2 = new Fraction(myFraction[0], myFraction[1]);
-			newFrac = f1.add(f2);
-			var newFraction = [newFrac.numerator, newFrac.denominator];
-			// var newFraction = [fraction[0] + myFraction[0], fraction[1] + myFraction[1]];
-			myFraction = newFraction;
-			updateMyFraction(myFraction);
-			addPieToList(other);
-		}
+	function addPie(event) {
+		event.preventDefault();
+		var other = otherPass.value;
+		if (!validatePass(other)) { return false;}
 
-		function showUserPass(pass) {
-			userPassword.value = pass;
-		}
+		fraction = decode(other);
+		f1 = new Fraction(fraction[0], fraction[1]);
+		f2 = new Fraction(myFraction[0], myFraction[1]);
+		newFrac = f1.add(f2);
+		var newFraction = [newFrac.numerator, newFrac.denominator];
+		console.log('new fract');
+		console.log(newFraction);
+		myFraction = newFraction
+		updateMyFraction(myFraction);
+		addPieToList(other);
+	}
+
+	function showUserPass(pass) {
+		userPassword.value = pass;
+	}
 
 
-		function generatePass(frac) {
-			return encode(frac);
-		}
+	function generatePass(frac) {
+		return encode(frac);
+	}
 
-		function randomFraction() {
+	function randomFraction() {
 		var denom = Math.round(Math.random()*10) + 2; // 1-12
 		return [1, denom];
 	}
@@ -129,15 +130,23 @@
 		digit1 = numer > 10 ? _.random(0, 4) : _.random(5, 9);
 		digit2 = numer % 10;
 		digit3 = _.random(0, 9);
-		digit4 = numer < 10 ? _.random(0, 4) : _.random(5, 9);
-		digit5 = numer % 10;
-		return [digit0, digit1, digit2, digit3, digit4, digit5].join('')
+		digit4 = denom < 10 ? _.random(0, 4) : _.random(5, 9);
+		digit5 = denom % 10;
+		result = [digit0, digit1, digit2, digit3, digit4, digit5].join('');
+		return result;
 		// return numer + ',' + denom;
 	}
 
 	function validatePass(candidate) {
-		if (!candidate) { return false;}
-		d(allFractions);
+		// return true;
+		if (!candidate) {
+			console.log("not candidate");
+			return false;
+		}
+		if (candidate.length != 6) {
+			console.log("not length");
+			return false;
+		}
 		if (_.includes(allFractions, candidate)) {
 			// check that the code has not been added before
 			return false;
@@ -171,16 +180,11 @@
 	}
 
 	function updateMyFraction(fraction) {
+		console.log('asdf');
+		console.log(fraction);
 		myPieNumer.textContent = fraction[0];
 		myPieDenom.textContent = fraction[1];
 	}
-
-	var myFraction = randomFraction();
-	updateMyFraction(myFraction);
-	var myCode = encode(myFraction);
-	var allFractions = [];
-	allFractions.push(myCode);
-	myPassBox.textContent = myCode;
 
 })(window)
 // when the user opens this page, user gets a unique id (which we can get a fraction from)
